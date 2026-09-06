@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Amys Taubenwelt 🕊️</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#8ed9ff;overflow:hidden}
+#game{width:100vw;height:100vh;position:relative;overflow:hidden;background:linear-gradient(#87d8ff 0 48%,#8ed66d 48% 100%)}
+#hud{position:absolute;top:10px;left:10px;right:10px;z-index:5;display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.card{background:rgba(255,255,255,.88);padding:8px 11px;border-radius:16px;font-weight:700;box-shadow:0 2px 8px #0002}
+#world{position:absolute;inset:0}
+#sun{position:absolute;right:7%;top:9%;font-size:55px}
+.cloud{position:absolute;font-size:50px;opacity:.9}.c1{left:5%;top:12%}.c2{left:55%;top:23%;font-size:38px}
+#aviary{position:absolute;left:7%;bottom:22%;width:180px;height:150px;border:7px solid #9a6b42;border-radius:25px 25px 12px 12px;background:rgba(255,255,255,.18)}
+#aviary:before{content:"🏡 AMYS ZUHAUSE";position:absolute;top:-38px;left:-5px;background:white;padding:6px;border-radius:10px;font-size:12px;font-weight:bold}
+#pond{position:absolute;right:8%;bottom:27%;width:120px;height:65px;background:#54c9ef;border-radius:50%;border:5px solid #8be1f5}
+.tree{position:absolute;font-size:80px}.t1{left:2%;bottom:48%}.t2{right:2%;bottom:42%}
+.item{position:absolute;font-size:34px;cursor:pointer;user-select:none}
+.coin{animation:bob 1s infinite alternate}@keyframes bob{to{transform:translateY(-7px)}}
+#amy{position:absolute;font-size:70px;z-index:3;transition:left .18s linear,top .18s linear;filter:drop-shadow(2px 5px 3px #0004);user-select:none}
+#message{position:absolute;left:50%;transform:translateX(-50%);bottom:155px;background:white;border-radius:18px;padding:10px 16px;font-weight:700;max-width:88%;text-align:center;z-index:6}
+#controls{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:space-around;align-items:end;z-index:8}
+.pad{display:grid;grid-template-columns:55px 55px 55px;grid-template-rows:55px 55px;gap:4px}
+button{border:0;border-radius:18px;background:white;font-size:25px;box-shadow:0 3px 8px #0003;min-width:52px;min-height:52px}
+button:active{transform:scale(.93)}
+.actions{display:flex;gap:6px}.actions button{font-size:20px}
+#start{position:absolute;inset:0;background:linear-gradient(#8ed9ff,#9ee57c);z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px}
+.panel{background:white;border-radius:30px;padding:28px;max-width:420px;width:100%;box-shadow:0 10px 30px #0003}
+.panel h1{margin-top:0;font-size:34px}.bigbird{font-size:100px}
+input{font-size:18px;padding:13px;border-radius:15px;border:2px solid #9ac;width:100%;margin:8px 0 12px}
+#startBtn{width:100%;font-size:20px;background:#ffd85c;padding:15px}
+</style>
+</head>
+<body>
+<div id="game">
+<div id="start">
+ <div class="panel">
+  <div class="bigbird">🕊️</div>
+  <h1>Amys Taubenwelt</h1>
+  <p>Willkommen in deinem eigenen kleinen Tauben-Abenteuer! 💕</p>
+  <input id="name" value="Amy" maxlength="15" aria-label="Name der Taube">
+  <button id="startBtn">🎮 Spiel starten!</button>
+ </div>
+</div>
+
+<div id="hud">
+ <div class="card">🪙 <span id="coins">0</span></div>
+ <div class="card">💕 <span id="happy">80</span>/100</div>
+ <div class="card">🌾 <span id="food">70</span>/100</div>
+</div>
+<div id="world">
+ <div id="sun">☀️</div><div class="cloud c1">☁️</div><div class="cloud c2">☁️</div>
+ <div id="aviary"></div><div id="pond"></div>
+ <div class="tree t1">🌳</div><div class="tree t2">🌳</div>
+ <div class="item" id="feed" style="left:35%;bottom:31%">🌾</div>
+ <div class="item" id="water" style="right:28%;bottom:31%">💧</div>
+ <div class="item coin" style="left:48%;bottom:43%">🪙</div>
+ <div class="item coin" style="left:68%;bottom:55%">🪙</div>
+ <div class="item coin" style="left:25%;bottom:55%">🪙</div>
+ <div id="amy">🕊️</div>
+</div>
+<div id="message">Drücke auf „Spiel starten“! 🕊️</div>
+<div id="controls">
+ <div class="pad">
+  <span></span><button data-move="up">⬆️</button><span></span>
+  <button data-move="left">⬅️</button><button data-move="down">⬇️</button><button data-move="right">➡️</button>
+ </div>
+ <div class="actions">
+  <button id="pet">💕</button><button id="fly">🪽</button>
+ </div>
+</div>
+</div>
+
+<script>
+(() => {
+let x=50,y=60,name="Amy",coins=0,happy=80,food=70;
+const amy=document.querySelector("#amy"), msg=document.querySelector("#message");
+function render(){
+ amy.style.left=x+"%"; amy.style.top=y+"%";
+ document.querySelector("#coins").textContent=coins;
+ document.querySelector("#happy").textContent=happy;
+ document.querySelector("#food").textContent=food;
+}
+function say(t){msg.textContent=t}
+document.querySelector("#startBtn").addEventListener("click",()=>{
+ name=document.querySelector("#name").value.trim()||"Amy";
+ document.querySelector("#start").style.display="none";
+ say("Willkommen, "+name+"! Sammle Münzen und kümmere dich um deine Taube! 🕊️💕");
+ render();
+});
+document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>{
+ let d=b.dataset.move;
+ if(d==="left")x-=6;if(d==="right")x+=6;if(d==="up")y-=6;if(d==="down")y+=6;
+ x=Math.max(0,Math.min(88,x));y=Math.max(8,Math.min(78,y));render();
+}));
+document.querySelector("#pet").addEventListener("click",()=>{happy=Math.min(100,happy+10);say(name+" gurrt glücklich! 🥰");render()});
+document.querySelector("#fly").addEventListener("click",()=>{y=Math.max(8,y-18);happy=Math.min(100,happy+5);say(name+" fliegt ein Stück! 🪽🕊️");render()});
+document.querySelector("#feed").addEventListener("click",()=>{food=Math.min(100,food+20);happy=Math.min(100,happy+5);say(name+" frisst glücklich! 🌾😋");render()});
+document.querySelector("#water").addEventListener("click",()=>{happy=Math.min(100,happy+4);say(name+" hat frisches Wasser! 💧");render()});
+document.querySelectorAll(".coin").forEach(c=>c.addEventListener("click",()=>{
+ coins++;c.style.display="none";say("Du hast eine Münze gefunden! 🪙✨");render();
+}));
+render();
+})();
+</script>
+</body>
+</html>
